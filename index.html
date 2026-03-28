@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile | AI Creative Designer</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --bg2: #111118;
+      --bg3: #1a1a26;
+      --accent: #7c6fef;
+      --accent2: #c084fc;
+      --accent3: #38bdf8;
+      --text: #e8e8f0;
+      --text2: #9090b0;
+      --card: #16161f;
+      --border: #2a2a3a;
+      --grad: linear-gradient(135deg, #7c6fef, #c084fc, #38bdf8);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── GLOW BLOBS ── */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.12;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .blob1 { width: 600px; height: 600px; background: #7c6fef; top: -200px; left: -200px; }
+    .blob2 { width: 500px; height: 500px; background: #c084fc; bottom: -100px; right: -100px; }
+    .blob3 { width: 400px; height: 400px; background: #38bdf8; top: 40%; left: 40%; }
+
+    /* ── LAYOUT ── */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    section { padding: 80px 0; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+
+    .hero-inner {
+      display: grid;
+      gap: 48px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(124,111,239,0.15);
+      border: 1px solid rgba(124,111,239,0.3);
+      border-radius: 999px;
+      padding: 6px 16px;
+      font-size: 0.8rem;
+      color: var(--accent2);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent2);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.4); }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .hero h1 .grad-text {
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-desc {
+      color: var(--text2);
+      font-size: 1.05rem;
+      max-width: 600px;
+      line-height: 1.9;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--grad);
+      color: #fff;
+      border: none;
+      box-shadow: 0 4px 24px rgba(124,111,239,0.35);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 16px rgba(124,111,239,0.6), 0 0 40px rgba(192,132,252,0.35), 0 8px 32px rgba(124,111,239,0.4);
+      filter: brightness(1.15);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      color: var(--accent2);
+      background: rgba(124,111,239,0.06);
+      box-shadow: 0 0 12px rgba(124,111,239,0.3), 0 0 28px rgba(192,132,252,0.15);
+    }
+
+    /* ── SECTION TITLE ── */
+    .section-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 48px;
+    }
+
+    /* ── SERVICES ── */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .service-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .service-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--grad);
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+
+    .service-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 0 16px rgba(124,111,239,0.35), 0 0 40px rgba(192,132,252,0.15); }
+    .service-card:hover::before { opacity: 0.04; }
+
+    .service-card > * { position: relative; z-index: 1; }
+
+    .service-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      background: rgba(124,111,239,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 16px;
+    }
+
+    .service-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .service-card p {
+      font-size: 0.85rem;
+      color: var(--text2);
+      line-height: 1.7;
+    }
+
+    /* ── SKILLS ── */
+    .skills-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+
+    @media (max-width: 600px) { .skills-layout { grid-template-columns: 1fr; } }
+
+    .skills-group {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+    }
+
+    .skills-group h3 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent2);
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .skill-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.82rem;
+      color: var(--text);
+      margin: 4px 4px 4px 0;
+    }
+
+    .skill-tag.highlight {
+      background: rgba(124,111,239,0.12);
+      border-color: rgba(124,111,239,0.35);
+      color: var(--accent2);
+    }
+
+    /* ── MERITS ── */
+    .merits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .merit-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      transition: border-color 0.2s;
+    }
+    .merit-item:hover { border-color: var(--accent3); }
+
+    .merit-check {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      background: rgba(56,189,248,0.15);
+      color: var(--accent3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .merit-item p {
+      font-size: 0.9rem;
+      color: var(--text2);
+      line-height: 1.7;
+    }
+    .merit-item p strong { color: var(--text); display: block; margin-bottom: 4px; font-size: 0.95rem; }
+
+    /* ── PROCESS ── */
+    .process-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .process-item {
+      display: flex;
+      gap: 24px;
+      position: relative;
+    }
+
+    .process-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 44px;
+      bottom: -24px;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .process-num {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--grad);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      box-shadow: 0 0 20px rgba(124,111,239,0.3);
+    }
+
+    .process-content {
+      padding-bottom: 40px;
+    }
+
+    .process-content h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .process-content p {
+      font-size: 0.875rem;
+      color: var(--text2);
+    }
+
+    /* ── CONTACT ── */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 600px) { .contact-grid { grid-template-columns: 1fr; } }
+
+    .contact-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+    }
+
+    .contact-card h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text2);
+      margin-bottom: 16px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .contact-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--grad);
+      flex-shrink: 0;
+    }
+
+    .avail-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .avail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+    }
+
+    .avail-row span:first-child { color: var(--text2); }
+    .avail-row span:last-child {
+      background: rgba(124,111,239,0.15);
+      border: 1px solid rgba(124,111,239,0.25);
+      color: var(--accent2);
+      border-radius: 6px;
+      padding: 2px 10px;
+      font-size: 0.8rem;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text2);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 16px 24px;
+      background: rgba(10,10,15,0.7);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-logo {
+      font-weight: 700;
+      font-size: 0.95rem;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text2);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    @media (max-width: 500px) { .nav-links { display: none; } }
+
+    /* ── THINKING TAG ── */
+    .thinking-tag {
+      display: inline-block;
+      background: rgba(56,189,248,0.08);
+      border: 1px solid rgba(56,189,248,0.2);
+      color: var(--accent3);
+      border-radius: 8px;
+      padding: 4px 12px;
+      font-size: 0.78rem;
+      letter-spacing: 0.05em;
+      margin-bottom: 24px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+
+  <!-- NAV -->
+  <nav>
+    <span class="nav-logo">AI Creative</span>
+    <ul class="nav-links">
+      <li><a href="#services">サービス</a></li>
+      <li><a href="#skills">スキル</a></li>
+      <li><a href="#merits">メリット</a></li>
+      <li><a href="#contact">コンタクト</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-inner">
+        <div>
+          <span class="badge">AI Creative Designer</span>
+        </div>
+        <h1>
+          AI × デザインで<br />
+          <span class="grad-text">速く・安く・伝わる</span><br />
+          クリエイティブを。
+        </h1>
+        <p class="hero-desc">
+          AI画像生成 × Canvaで、バナー・SNS画像・ショート動画を短納期で制作。<br />
+          色彩検定２級の知識で、ブランドに合った配色と統一感を設計します。
+        </p>
+        <div class="hero-cta">
+          <a href="#services" class="btn btn-primary">サービスを見る</a>
+          <a href="#contact" class="btn btn-ghost">コンタクト</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="container">
+      <p class="section-label">Services</p>
+      <h2 class="section-title">対応可能な業務</h2>
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">🎨</div>
+          <h3>広告バナー制作</h3>
+          <p>AI画像生成 + Canvaで静止画バナーを高速制作。ABテスト用の複数案も対応。</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🎨</div>
+          <h3>色彩設計・配色提案</h3>
+          <p>色彩検定２級の知識でブランドカラーに合った配色を提案。統一感を強化します。</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">📱</div>
+          <h3>SNS投稿テンプレ作成</h3>
+          <p>Instagramなど各SNSに合わせたトンマナ統一テンプレを制作。</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🎬</div>
+          <h3>ショート動画制作</h3>
+          <p>TikTok / リール対応。台本 → 素材作成 → 編集まで一貫対応。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="container">
+      <p class="section-label">Skills</p>
+      <h2 class="section-title">スキル・ツール</h2>
+      <div class="skills-layout">
+        <div class="skills-group">
+          <h3>得意分野</h3>
+          <span class="skill-tag highlight">✦ 配色設計</span>
+          <span class="skill-tag highlight">✦ ブランドカラー調整</span>
+          <span class="skill-tag highlight">✦ AI画像生成×デザイン</span>
+          <span class="skill-tag highlight">✦ バナー量産</span>
+        </div>
+        <div class="skills-group">
+          <h3>資格</h3>
+          <span class="skill-tag highlight">🏅 色彩検定２級</span>
+        </div>
+        <div class="skills-group">
+          <h3>使用ツール</h3>
+          <span class="skill-tag">Canva</span>
+          <span class="skill-tag">ChatGPT</span>
+          <span class="skill-tag">Claude</span>
+          <span class="skill-tag">Gemini</span>
+          <span class="skill-tag">Nano Banana Pro</span>
+          <span class="skill-tag">CapCut</span>
+        </div>
+        <div class="skills-group">
+          <h3>習得中</h3>
+          <span class="skill-tag">TikTok / リール編集</span>
+          <span class="skill-tag">スライド作成</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- MERITS -->
+  <section id="merits">
+    <div class="container">
+      <p class="section-label">Why choose me</p>
+      <h2 class="section-title">依頼するメリット</h2>
+      <div class="merits-grid">
+        <div class="merit-item">
+          <div class="merit-check">✓</div>
+          <p><strong>短納期 &amp; 複数案</strong>AI画像生成 × Canvaで高速に複数案を提案できます。</p>
+        </div>
+        <div class="merit-item">
+          <div class="merit-check">✓</div>
+          <p><strong>ブランドに合う配色</strong>色彩検定２級の知識でトーン&amp;マナーを設計します。</p>
+        </div>
+        <div class="merit-item">
+          <div class="merit-check">✓</div>
+          <p><strong>丁寧な進行管理</strong>ヒアリング→方向性確認→初稿→修正の流れでズレを最小化。</p>
+        </div>
+        <div class="merit-item">
+          <div class="merit-check">✓</div>
+          <p><strong>動画も一貫対応</strong>台本〜素材作成〜編集まですべて対応できます。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- PROCESS -->
+  <section id="process">
+    <div class="container">
+      <p class="section-label">Process</p>
+      <h2 class="section-title">進め方</h2>
+      <div class="process-list">
+        <div class="process-item">
+          <div class="process-num">01</div>
+          <div class="process-content">
+            <h3>ヒアリング</h3>
+            <p>LINE / ChatWork / Zoomで目的・ターゲット・イメージを丁寧にお聞きします。</p>
+          </div>
+        </div>
+        <div class="process-item">
+          <div class="process-num">02</div>
+          <div class="process-content">
+            <h3>方向性確認</h3>
+            <p>配色・トンマナ・構成の方向性を共有し、認識のズレをなくします。</p>
+          </div>
+        </div>
+        <div class="process-item">
+          <div class="process-num">03</div>
+          <div class="process-content">
+            <h3>初稿提出</h3>
+            <p>Canvaで制作した初稿をご確認いただけます（Canvaリンクでの共有も可）。</p>
+          </div>
+        </div>
+        <div class="process-item">
+          <div class="process-num">04</div>
+          <div class="process-content">
+            <h3>修正・納品</h3>
+            <p>フィードバックをもとに修正し、ご満足いただける形で納品します。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container">
+      <p class="section-label">Contact</p>
+      <h2 class="section-title">コンタクト・稼働情報</h2>
+      <div class="contact-grid">
+        <div class="contact-card">
+          <h3>連絡ツール</h3>
+          <div class="contact-item"><span class="contact-dot"></span>LINE</div>
+          <div class="contact-item"><span class="contact-dot"></span>ChatWork</div>
+          <div class="contact-item"><span class="contact-dot"></span>Mail</div>
+          <div class="contact-item"><span class="contact-dot"></span>Zoom（打ち合わせ）</div>
+          <br />
+          <p style="font-size:0.82rem;color:var(--text2);">返信目安：当日中〜翌日</p>
+        </div>
+        <div class="contact-card">
+          <h3>稼働時間</h3>
+          <div class="avail-bar">
+            <div class="avail-row">
+              <span>平日</span>
+              <span>20:00 〜 23:00</span>
+            </div>
+            <div class="avail-row">
+              <span>土日</span>
+              <span>13:00 〜 18:00</span>
+            </div>
+            <div class="avail-row">
+              <span>週の稼働目安</span>
+              <span>週 20時間</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 想い -->
+      <div style="margin-top:40px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px;position:relative;overflow:hidden;">
+        <div style="position:absolute;inset:0;background:var(--grad);opacity:0.04;pointer-events:none;"></div>
+        <p class="thinking-tag">仕事への想い</p>
+        <p style="font-size:1rem;line-height:1.9;color:var(--text2);max-width:680px;position:relative;z-index:1;">
+          AIで作業を速くするだけでなく、<strong style="color:var(--text)">「伝わるデザイン」</strong>に仕上げることを大切にしています。<br />
+          修正やすり合わせも含めて丁寧に対応し、安心して任せていただけるやり取りを心がけています。<br />
+          <span style="font-size:0.82rem;color:#606070;">※基本的に生成AIを活用した業務となります旨、あらかじめご了承ください。</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>AI Creative Designer — Powered by AI × Human Creativity</p>
+  </footer>
+
+
+  <!-- SCROLL TO TOP -->
+  <button id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="ページトップへ">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="scroll-arrow">
+      <defs>
+        <linearGradient id="arrowGrad" x1="0" y1="100%" x2="0" y2="0%">
+          <stop offset="0%" stop-color="#7c6fef"/>
+          <stop offset="50%" stop-color="#c084fc"/>
+          <stop offset="100%" stop-color="#38bdf8"/>
+        </linearGradient>
+      </defs>
+      <path d="M9 14V4M9 4L4 9M9 4L14 9" stroke="url(#arrowGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <style>
+    @keyframes arrowPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+    .scroll-arrow { animation: arrowPulse 1.8s ease-in-out infinite; }
+  </style>
+
+  <style>
+    #scrollTop {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-size: 1.1rem;
+      cursor: pointer;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s, box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+    }
+    #scrollTop.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #scrollTop:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 14px rgba(124,111,239,0.4), 0 0 32px rgba(192,132,252,0.2);
+      transform: translateY(-3px);
+    }
+  </style>
+
+  <script>
+    const btn = document.getElementById('scrollTop');
+    window.addEventListener('scroll', () => {
+      btn.classList.toggle('visible', window.scrollY > 300);
+    });
+  </script>
+
+</body>
+</html>
