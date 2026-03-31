@@ -71,6 +71,7 @@
       display: flex;
       align-items: center;
       position: relative;
+      padding-top: 146px;
     }
 
     .hero-inner {
@@ -460,13 +461,55 @@
       position: fixed;
       top: 0; left: 0; right: 0;
       z-index: 100;
-      padding: 16px 24px;
+      padding: 8px 24px;
+      min-height: 116px;
       background: rgba(10,10,15,0.7);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
+    }
+
+    .nav-center {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: none;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .nav-text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .nav-name {
+      font-weight: 700;
+      font-size: 1.1rem;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.1em;
+    }
+
+    .nav-title {
+      font-size: 0.78rem;
+      color: var(--text2);
+      letter-spacing: 0.08em;
     }
 
     .nav-logo {
@@ -517,6 +560,13 @@
   <!-- NAV -->
   <nav>
     <span class="nav-logo">AI Creative</span>
+    <div class="nav-center">
+      <img src="image/goriken_icon300x300.png" alt="アバター" class="nav-avatar" />
+      <div class="nav-text">
+        <span class="nav-name">GORIKEN</span>
+        <span class="badge">AI Creative Designer</span>
+      </div>
+    </div>
     <ul class="nav-links">
       <li><a href="#services">サービス</a></li>
       <li><a href="#skills">スキル</a></li>
@@ -529,9 +579,6 @@
   <section class="hero">
     <div class="container">
       <div class="hero-inner">
-        <div>
-          <span class="badge">AI Creative Designer</span>
-        </div>
         <h1>
           AI × デザインで<br />
           <span class="grad-text">速く・安く・伝わる</span><br />
